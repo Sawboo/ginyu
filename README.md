@@ -1,4 +1,4 @@
-ginyu
+Ginyu
 =====
 
-Blogging application for Django
+A simple but robust blogging application for Django.
