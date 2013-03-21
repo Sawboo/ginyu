@@ -1,7 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from forms import PostAdminForm
-from models import Post
+from models import Tag, Post
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'post_count')
+
+    prepopulated_fields = {'slug': ('name',)}
+
+    def post_count(self, obj):
+        return obj.post_set.count()
+    post_count.short_description=('# of posts tagged')
+
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'publish_date', 'draft_mode')
@@ -18,6 +29,7 @@ class PostAdmin(admin.ModelAdmin):
                         'title',
                         'excerpt',
                         'content',
+                        'tags',
                         'publish_date',
                         'slug',
                         'draft_mode')
@@ -28,7 +40,12 @@ class PostAdmin(admin.ModelAdmin):
         }),
     )
 
+    filter_horizontal = ('tags',)
     prepopulated_fields = {'slug': ('title',)}
+
+    def tag_count(self, obj):
+        return str(obj.tags.count())
+    tag_count.short_description = ('Tags')
 
     class Media:
         """Load custom css into the admin site"""
@@ -39,4 +56,5 @@ class PostAdmin(admin.ModelAdmin):
         obj.author = request.user
         obj.save()
 
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Post, PostAdmin)

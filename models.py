@@ -1,3 +1,5 @@
+import re
+
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
@@ -5,6 +7,54 @@ from django.contrib.auth.models import User
 from markdown import markdown
 from django.template.defaultfilters import slugify
 from django.utils.text import truncate_html_words
+
+
+# regex used to find links in an article
+LINK_RE = re.compile('<a.*?href="(.*?)".*?>(.*?)</a>', re.I|re.M)
+TITLE_RE = re.compile('<title.*?>(.*?)</title>', re.I|re.M)
+TAG_RE = re.compile('[^a-z0-9\-_\+\:\.]?', re.I)
+
+class Tag(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    slug = models.CharField(max_length=64, unique=True, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    @staticmethod
+    def clean_tag(name):
+        """Replace spaces with dashes, in case someone adds such a tag manually"""
+
+        name = name.replace(' ', '-').encode('ascii', 'ignore')
+        name = TAG_RE.sub('', name)
+        clean = name.lower().strip(", ")
+
+        return clean
+
+    def save(self, *args, **kwargs):
+        """Cleans up any characters I don't want in a URL"""
+
+        self.slug = Tag.clean_tag(self.name)
+        super(Tag, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('articles_display_tag', (self.cleaned,))
+
+    @property
+    def cleaned(self):
+        """Returns the clean version of the tag"""
+
+        return self.slug or Tag.clean_tag(self.name)
+
+    @property
+    def rss_name(self):
+        return self.cleaned
+
+    class Meta:
+        ordering = ('name',)
+
+
 
 class ArticleManager(models.Manager):
 
@@ -42,6 +92,8 @@ class Post(models.Model):
     excerpt = models.TextField(blank=True,
         help_text=('A short teaser of your posts content.'))
     rendered_excerpt = models.TextField()
+    tags = models.ManyToManyField(Tag, blank=True,
+        help_text=('Tags that describe this article. Select from existing tags or create new tags. <br />'))
     slug = models.SlugField(unique_for_year='publish_date',
         help_text=('A URL-friendly representation of your posts title.'))
     author = models.ForeignKey(User, related_name="posts")
