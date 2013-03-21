@@ -7,12 +7,10 @@ from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 
 
-
 EPICEDITOR_DEFAULT_THEMES = {
     'base': 'epiceditor.css',
     'preview': 'github.css',
     'editor': 'epic-light.css'}
-
 
 
 class EpicEditorWidget(forms.Textarea):
@@ -28,13 +26,13 @@ class EpicEditorWidget(forms.Textarea):
             value = ''
         final_attrs = self.build_attrs(attrs, name=name)
         html = """
-            <div id="%(id)sepiceditor"></div>
+            <div id="%(id)s_epiceditor"></div>
             <textarea%(attrs)s>%(body)s</textarea>
             <script type="text/javascript">
                 (function($) {
                   $(document).ready(function() {
                     var opts = {
-                        container: '%(id)sepiceditor',
+                        container: '%(id)s_epiceditor',
                         basePath: '%(basePath)s',
                         theme: {
                           base:'%(theme_base)s',

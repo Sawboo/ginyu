@@ -1,0 +1,23 @@
+#id_excerpt_epiceditor,
+#id_content_epiceditor {
+    border: 1px solid #ccc;
+    margin: 0 0 10px 0;
+    padding: 0;
+    position: relative;
+    left:106px;
+    top: 0;
+    width: 700px;
+}
+
+#id_excerpt_epiceditor {
+    height: 140px;
+}
+
+#id_content_epiceditor {
+    height: 320px;
+}
+
+#id_excerpt_epiceditor iframe,
+#id_content_epiceditor iframe {
+    margin-top: -16px;
+}

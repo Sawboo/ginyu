@@ -31,17 +31,19 @@ class Post(models.Model):
         help_text=('Posts in draft-mode will not appear to regular users.'))
 
     # html meta keywords and description
-    keywords = models.TextField(blank=True,
-        help_text=("If omitted, the keywords will be the same as the article tags."))
+    keywords = models.CharField(max_length=250, blank=True,
+        help_text=("A concise list of items and terms that describe the content of the post."))
     description = models.TextField(blank=True,
-        help_text=("If omitted, the description will be determined by the first bit of the article's content."))
+        help_text=("A brief explanation of the post's content used by search engines. (auto-magic)"))
 
     title = models.CharField(max_length=250)
-    content = models.TextField()
+    content = models.TextField(help_text=('A short teaser of your posts content.'))
     rendered_content = models.TextField()
-    excerpt = models.TextField(blank=True)
+    excerpt = models.TextField(blank=True,
+        help_text=('A short teaser of your posts content.'))
     rendered_excerpt = models.TextField()
-    slug = models.SlugField(unique_for_year='publish_date')
+    slug = models.SlugField(unique_for_year='publish_date',
+        help_text=('A URL-friendly representation of your posts title.'))
     author = models.ForeignKey(User, related_name="posts")
 
     objects = ArticleManager()
@@ -72,19 +74,9 @@ class Post(models.Model):
 
         super(Post, self).save(*args, **kwargs)
 
-        # do some things that require an ID first
-        # requires_save = self.do_auto_tag(using)
-        # requires_save |= self.do_tags_to_keywords()
-        # requires_save |= self.do_default_site(using)
-
-        # if requires_save:
-            # bypass the other processing
-            # super(Post, self).save()
-
-
 
     def render_markup(self):
-        """Turns markup into HTML"""
+        """converts markup from post.content to HTML"""
 
         original = self.rendered_content
         self.rendered_content = markdown(self.content)
@@ -92,23 +84,9 @@ class Post(models.Model):
         return (self.rendered_content != original)
 
 
-    def meta_description(self):
-        """
-        If meta description is empty, sets it to the article's excerpt.
-
-        Returns True if an additional save is required, False otherwise.
-        """
-
-        if len(self.description.strip()) == 0:
-            self.description = truncate_html_words(self.content, 25)
-            return True
-
-        return False
-
     def get_excerpt(self):
-        """
-        Retrieve some part of the article's description.
-        """
+        """if excerpt is blank, we create it from post.content"""
+
         if len(self.excerpt.strip()) == 0:
             original = self.content
             self.excerpt = truncate_html_words(self.content, 100)
@@ -118,6 +96,16 @@ class Post(models.Model):
         else:
             self.rendered_excerpt = markdown(self.excerpt)
             return (self.rendered_excerpt)
+
+
+    def meta_description(self):
+        """if meta description is empty, sets it to the article's excerpt"""
+
+        if len(self.description.strip()) == 0:
+            self.description = truncate_html_words(self.content, 25)
+            return True
+
+        return False
 
 
     def unique_slug(self):
