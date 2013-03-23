@@ -27,15 +27,13 @@ class PostAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': (
                         'title',
-                        'excerpt',
                         'content',
                         'tags',
                         'publish_date',
-                        'slug',
                         'draft_mode')
         }),
         ('Metadata', {
-            'fields': ('keywords', 'description',),
+            'fields': ('slug', 'excerpt', 'keywords', 'description',),
             'classes': ('collapse',)
         }),
     )

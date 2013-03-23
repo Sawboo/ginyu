@@ -1,23 +1,38 @@
-#id_excerpt_epiceditor,
 #id_content_epiceditor {
     border: 1px solid #ccc;
     margin: 0 0 10px 0;
     padding: 0;
-    position: relative;
-    left:106px;
-    top: 0;
-    width: 700px;
 }
 
-#id_excerpt_epiceditor {
-    height: 140px;
+#id_excerpt,
+#id_description {
+    width: 694px;
+    font-size:15px;
+    padding-left:6px;
+    overflow-y:scroll;
 }
+
+
+#id_excerpt {height:120px;}
+#id_description {height:80px;}
 
 #id_content_epiceditor {
     height: 320px;
+    width: 700px;
+    position: relative;
+    left:106px;
+    top: 0;
 }
 
 #id_excerpt_epiceditor iframe,
 #id_content_epiceditor iframe {
     margin-top: -16px;
 }
+
+.vTextField {
+    width: 694px;
+    font-size:15px;
+    padding-left:6px;
+}
+
+#id_title { padding-top: 6px; padding-bottom: 6px; font-size: 18px; }
