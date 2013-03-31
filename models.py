@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 
 from markdown import markdown
 from django.template.defaultfilters import slugify
-from django.utils.text import truncate_html_words, truncate_words
+from django.utils.text import truncate_words, truncate_html_words
 from django.db.models.signals import post_save
+
 
 
 # regex used to find links in an article
@@ -68,13 +69,10 @@ class PostManager(models.Manager):
 
 class Post(models.Model):
 
-    # datefields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
     publish_date = models.DateTimeField(default=datetime.now,
         help_text=('The date and time this article will be published.'))
-
-    # metadata
     keywords = models.CharField(max_length=250, blank=True,
         help_text="A concise list of items and terms that describe the \
                     content of the post.<br /> If omitted, keywords will the \
@@ -82,29 +80,23 @@ class Post(models.Model):
     description = models.TextField(blank=True,
         help_text="A brief explanation of the post's content used by search \
                     engines. (auto-magic)")
-    # editable fields
     title = models.CharField(max_length=250)
     content = models.TextField()
+    rendered_content = models.TextField()
     excerpt = models.TextField(blank=True,
         help_text='A short teaser of your posts content. If omitted, an excerpt\
          will be generated from the content field. (auto-magic)')
-
+    rendered_excerpt = models.TextField()
     slug = models.SlugField(unique_for_year='publish_date',
         help_text='A URL-friendly representation of your posts title.')
-
     tags = models.ManyToManyField(Tag, blank=True,
         help_text='Tags that describe this article. Select from existing tags \
                     or create new tags. <br />')
-
     draft_mode = models.BooleanField(default=False,
         help_text='Posts in draft-mode will not appear to regular users.')
-
-    # hidden fields
-    rendered_content = models.TextField()
-    rendered_excerpt = models.TextField()
     author = models.ForeignKey(User, related_name="posts")
 
-    # custom manager
+    # add our custom manager
     objects = PostManager()
 
     def __init__(self, *args, **kwargs):
@@ -124,39 +116,39 @@ class Post(models.Model):
 
         super(Post, self).save(*args, **kwargs)
 
-        requires_save = self.tags_to_keywords()
+        #requires_save = self.tags_to_keywords()
 
-        if requires_save:
-            # bypass the other processing
-            super(Post, self).save()
+        # if requires_save:
+        #     # bypass the other processing
+        #     super(Post, self).save()
 
     def render_content(self):
         """renders markdown in post.content to post.rendered_content"""
 
-        original = self.rendered_content
         self.rendered_content = markdown(self.content)
 
-        return (self.rendered_content != original)
+        return (self.rendered_content)
+
+    def render_excerpt(self):
+        """renders post.rendered_excerpt. If excerpt is blank, create it"""
+
+        if len(self.excerpt.strip()):
+            self.rendered_excerpt = markdown(self.excerpt)
+        else:
+            # use truncate_html_words to preserve linebreaks in self.content
+            self.excerpt = truncate_html_words(self.content, 60)
+            self.rendered_excerpt = markdown(self.excerpt)
+
+        return self.excerpt
 
     def meta_description(self):
-        """if meta description is empty, sets it to the article's excerpt"""
+        """if meta description is empty, create it from post.content"""
 
         if len(self.description.strip()) == 0:
             self.description = truncate_words(self.content, 25)
             return True
 
         return False
-
-    def render_excerpt(self):
-        """if excerpt is blank, we create it from post.content"""
-
-        if len(self.excerpt.strip()):
-            self.rendered_excerpt = markdown(self.excerpt)
-        else:
-            self.excerpt = truncate_words(self.content, 60)
-            self.rendered_excerpt = markdown(self.excerpt)
-
-        return self.excerpt
 
     def tags_to_keywords(self):
         """
@@ -178,3 +170,19 @@ class Post(models.Model):
     class Meta:
         ordering = ('-publish_date', 'title')
         get_latest_by = 'publish_date'
+
+
+def auto_keywords(sender, instance, signal,
+    *args, **kwargs):
+    """
+    If meta-keywords are left blank on post.save(), they will be
+    copied from the posts tags.
+    """
+
+    if len(instance.keywords.strip()) == 0:
+        post_save.disconnect(auto_keywords, sender=Post)
+        instance.keywords = ', '.join([t.name for t in instance.tags.all()])
+        instance.save()
+        post_save.connect(auto_keywords, sender=Post)
+
+post_save.connect(auto_keywords, sender=Post)
