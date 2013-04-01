@@ -1,14 +1,13 @@
 from django.contrib import admin
-from forms import PostAdminForm
 from models import Tag, Post
 
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'post_count')
-
     prepopulated_fields = {'slug': ('name',)}
 
     def post_count(self, obj):
+        """counts the number of post-relationships for each tag"""
         return obj.post_set.count()
     post_count.short_description = '# of posts tagged'
 
@@ -20,7 +19,6 @@ class PostAdmin(admin.ModelAdmin):
     list_per_page = 25
     search_fields = ('title', 'description', 'content')
     date_hierarchy = 'publish_date'
-    form = PostAdminForm
     inlines = []
 
     fieldsets = (

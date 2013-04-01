@@ -136,5 +136,6 @@ def render_markup(markdown):
 
     markup = markdown2.markdown(markdown, extras=[
         "fenced-code-blocks",
-        "wiki-tables"])
+        "wiki-tables",
+        "code-friendly"])
     return markup
