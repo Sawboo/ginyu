@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 from forms import PostAdminForm
 from models import Tag, Post
 
@@ -11,7 +10,7 @@ class TagAdmin(admin.ModelAdmin):
 
     def post_count(self, obj):
         return obj.post_set.count()
-    post_count.short_description=('# of posts tagged')
+    post_count.short_description = '# of posts tagged'
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -26,14 +25,14 @@ class PostAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {'fields': (
-                        'title',
-                        'content',
-                        'tags',
-                        'publish_date',
-                        'draft_mode')
-        }),
+                'title',
+                'content',
+                'tags',
+                'publish_date',
+                'draft_mode')
+                }),
         ('Metadata', {
-            'fields': ('slug', 'excerpt', 'keywords', 'description',),
+            'fields': ('slug', 'excerpt', 'description',),
             'classes': ('collapse',)
         }),
     )
@@ -47,7 +46,7 @@ class PostAdmin(admin.ModelAdmin):
 
     class Media:
         """Load custom css into the admin site"""
-        css = { 'all': ('/static/epiceditor/style.css',) }
+        css = {'all': ('/static/admin-style.css',)}
 
     def save_model(self, request, obj, form, change):
         """Set the post's author based on the logged in user"""

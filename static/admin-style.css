@@ -1,0 +1,25 @@
+#id_content,
+#id_excerpt,
+#id_description {
+    width: 694px;
+    max-width: 694px;
+    font-size:15px;
+    padding-left:6px;
+    overflow-y:scroll;
+}
+
+
+#id_excerpt {height:120px;}
+#id_description {height:80px;}
+
+#id_content {
+    height: 320px;
+}
+
+.vTextField {
+    width: 694px;
+    font-size:15px;
+    padding-left:6px;
+}
+
+#id_title { padding-top: 6px; padding-bottom: 6px; font-size: 18px; }

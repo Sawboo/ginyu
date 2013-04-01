@@ -4,17 +4,9 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 
-from markdown import markdown
-from django.template.defaultfilters import slugify
+import markdown2
 from django.utils.text import truncate_words, truncate_html_words
-from django.db.models.signals import post_save
 
-
-
-# regex used to find links in an article
-LINK_RE = re.compile('<a.*?href="(.*?)".*?>(.*?)</a>', re.I|re.M)
-TITLE_RE = re.compile('<title.*?>(.*?)</title>', re.I|re.M)
-TAG_RE = re.compile('[^a-z0-9\-_\+\:\.]?', re.I)
 
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -23,32 +15,12 @@ class Tag(models.Model):
     def __unicode__(self):
         return self.name
 
-    @staticmethod
-    def clean_tag(name):
-        """replace spaces with dashes, in man-made slugs"""
-
-        name = name.replace(' ', '-').encode('ascii', 'ignore')
-        name = TAG_RE.sub('', name)
-        clean = name.lower().strip(", ")
-        return clean
-
-    def save(self, *args, **kwargs):
-        """methods to be run before post is saved"""
-
-        self.slug = Tag.clean_tag(self.name)
-        super(Tag, self).save(*args, **kwargs)
-
     @models.permalink
     def get_absolute_url(self):
         return ('articles_display_tag', (self.slug,))
 
-    @property
-    def rss_name(self):
-        return self.slug
-
     class Meta:
         ordering = ('name',)
-
 
 
 class PostManager(models.Manager):
@@ -72,35 +44,36 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
     publish_date = models.DateTimeField(default=datetime.now,
-        help_text=('The date and time this article will be published.'))
-    keywords = models.CharField(max_length=250, blank=True,
-        help_text="A concise list of items and terms that describe the \
-                    content of the post.<br /> If omitted, keywords will the \
-                    same as the tags for the post. Used by search engines.")
+                                        help_text=('The date and time this \
+                                            article will be published.'))
     description = models.TextField(blank=True,
-        help_text="A brief explanation of the post's content used by search \
-                    engines. (auto-magic)")
+                                   help_text="A brief explanation of the \
+                                   post's content used by search engines. \
+                                   (auto-magic)")
     title = models.CharField(max_length=250)
     content = models.TextField()
     rendered_content = models.TextField()
     excerpt = models.TextField(blank=True,
-        help_text='A short teaser of your posts content. If omitted, an excerpt\
-         will be generated from the content field. (auto-magic)')
+                               help_text='A short teaser of your posts \
+                               content. If omitted, an excerpt will be \
+                               generated from the content field. (auto-magic)')
     rendered_excerpt = models.TextField()
     slug = models.SlugField(unique_for_year='publish_date',
-        help_text='A URL-friendly representation of your posts title.')
+                            help_text='A URL-friendly representation of your \
+                            posts title.')
     tags = models.ManyToManyField(Tag, blank=True,
-        help_text='Tags that describe this article. Select from existing tags \
-                    or create new tags. <br />')
+                                  help_text='Tags that describe this article. \
+                                  Select from existing tags or create new \
+                                  tags. <br />')
     draft_mode = models.BooleanField(default=False,
-        help_text='Posts in draft-mode will not appear to regular users.')
+                                     help_text='Posts in draft-mode will not \
+                                     appear to regular users.')
     author = models.ForeignKey(User, related_name="posts")
 
     # add our custom manager
     objects = PostManager()
 
     def __init__(self, *args, **kwargs):
-
         super(Post, self).__init__(*args, **kwargs)
         self._excerpt = None
 
@@ -116,29 +89,21 @@ class Post(models.Model):
 
         super(Post, self).save(*args, **kwargs)
 
-        #requires_save = self.tags_to_keywords()
-
-        # if requires_save:
-        #     # bypass the other processing
-        #     super(Post, self).save()
-
     def render_content(self):
-        """renders markdown in post.content to post.rendered_content"""
+        """render post.rendered_content from post.content"""
 
-        self.rendered_content = markdown(self.content)
-
-        return (self.rendered_content)
+        self.rendered_content = render_markup(self.content)
+        return self.rendered_content
 
     def render_excerpt(self):
         """renders post.rendered_excerpt. If excerpt is blank, create it"""
 
         if len(self.excerpt.strip()):
-            self.rendered_excerpt = markdown(self.excerpt)
+            self.rendered_excerpt = render_markup(self.excerpt)
         else:
             # use truncate_html_words to preserve linebreaks in self.content
-            self.excerpt = truncate_html_words(self.content, 60)
-            self.rendered_excerpt = markdown(self.excerpt)
-
+            self.excerpt = truncate_html_words(self.content, 80)
+            self.rendered_excerpt = render_markup(self.excerpt)
         return self.excerpt
 
     def meta_description(self):
@@ -146,43 +111,30 @@ class Post(models.Model):
 
         if len(self.description.strip()) == 0:
             self.description = truncate_words(self.content, 25)
-            return True
-
-        return False
-
-    def tags_to_keywords(self):
-        """
-        If meta keywords is empty, sets them using the posts tags.
-
-        Returns True if an additional save is required, False otherwise.
-        """
-
-        if len(self.keywords.strip()) == 0:
-            self.keywords = ', '.join([t.name for t in self.tags.all()])
-            return True
-
-        return False
+        return self.description
 
     @models.permalink
     def get_absolute_url(self):
-        return ('articles_display_article', (self.publish_date.year, self.slug))
+        return ('articles_display_article',
+                (self.publish_date.year, self.slug))
 
     class Meta:
         ordering = ('-publish_date', 'title')
         get_latest_by = 'publish_date'
 
 
-def auto_keywords(sender, instance, signal,
-    *args, **kwargs):
+def render_markup(markdown):
     """
-    If meta-keywords are left blank on post.save(), they will be
-    copied from the posts tags.
+    Uses markdown2 to return html markup.
+
+    Extra implementations include:
+        * fenced-code-blocks with syntax highlighting.
+            http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
+        * wiki-tables support.
+            http://github.com/trentm/python-markdown2/wiki/wiki-tables
     """
 
-    if len(instance.keywords.strip()) == 0:
-        post_save.disconnect(auto_keywords, sender=Post)
-        instance.keywords = ', '.join([t.name for t in instance.tags.all()])
-        instance.save()
-        post_save.connect(auto_keywords, sender=Post)
-
-post_save.connect(auto_keywords, sender=Post)
+    markup = markdown2.markdown(markdown, extras=[
+        "fenced-code-blocks",
+        "wiki-tables"])
+    return markup
