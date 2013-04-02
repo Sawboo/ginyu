@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blog Index - {% endblock %}
+
+{% block page_content %}
+
+<section>
+    {% for post in object_list %}
+    <article>
+        <div class="post-meta">
+            <header>
+                <h1><a href="{% url 'PostDetailView' post.slug %}">{{ post.title }}</a></h1>
+                <small>{{ post.publish_date|date:"F j, Y" }}</small>
+                <br />
+                <small>by <cite>{{ post.author }}</cite></small>
+            </header>
+                <p>
+                    {% for tag in post.tags.all %}
+                        <a href="tags/{{ tag.slug }}">{{ tag.name }}</a>
+                        {% if not forloop.last %}, {% endif %}
+                     {% endfor %}
+                </p>
+        </div><!-- end post-meta  -->
+
+        <div class="post-content">
+            {{ post.rendered_excerpt|safe }}
+            <footer>
+                <a class="morelink" href="{% url 'PostDetailView' post.slug %}">&#9801; Read More &#9801;</a>
+            </footer>
+        </div><!-- end post-content  -->
+    </article>
+    {% endfor %}
+</section><!-- end section  -->
+
+{% endblock %}

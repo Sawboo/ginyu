@@ -1,25 +1,28 @@
-from django.shortcuts import render
-from .models import Tag, Post
+from django.views.generic import ListView, DetailView, ArchiveIndexView
+from .models import Post
+
+# Goodbye function based views, hello class based views.
+# For more information on the magic going on here see the docs:
+#
+# https//docs.djangoproject.com/en/1.5/ref/class-based-views/
 
 
-def post_list(request, *args, **kwargs):
-    """returns a list of blog posts using our custom manager"""
-    post_list = Post.objects.active()
-    t = "post_list.html"
+class PostListView(ListView):
+    """A view that returns a list of posts objects."""
 
-    context = {
-        "posts": post_list,
-    }
-
-    return render(request, t, context)
+    model = Post
+    queryset = Post.objects.active()
+    template_name = "post_list.html"
 
 
-def post_detail(request, slug, *args, **kwargs):
-    post = Post.objects.get(slug=slug, draft_mode=False)
-    t = "post_detail.html"
+class PostDetailView(DetailView):
+    """A view that returns the details of a single post."""
+    model = Post
+    template_name = "post_detail.html"
 
-    context = {
-        "post": post
-    }
 
-    return render(request, t, context)
+class PostArchiveIndexView(ArchiveIndexView):
+
+    model = Post
+    date_field = "publish_date"
+    template_name = "post_archive.html"

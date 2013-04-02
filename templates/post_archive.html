@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blog Index - {% endblock %}
+
+{% block page_content %}
+
+<section>
+    {% for post in object_list %}
+    <article>
+        <div class="post-meta">
+            <header>
+                <h1>{{ post.publish_date|date:"F j, Y" }}</h1>
+                <small>by <cite>{{ post.author }}</cite></small>
+            </header>
+        </div><!-- end post-meta  -->
+
+        <div class="post-content">
+            <h4><a href="{% url 'PostDetailView' post.slug %}">
+                {{ post.title }}</a></h4>
+                <div class="description">
+                    {{ post.rendered_excerpt|safe|truncatewords_html:20 }}
+                </div>
+
+        </div><!-- end post-content  -->
+    </article>
+    {% endfor %}
+</section><!-- end section  -->
+
+{% endblock %}
