@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 
-{% block page_title %}Blog Index - {% endblock %}
+{% block page_title %}{{ post.title }}{% endblock %}
 
 {% block page_content %}
 
 <section>
-    {% for post in posts %}
     <article>
         <div class="post-meta">
             <header>
-                <h1><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h1>
+                <h1>{{ post.title }}</h1>
                 <small>{{ post.publish_date|date:"F j, Y" }}</small>
                 <br />
                 <small>by <cite>{{ post.author }}</cite></small>
@@ -23,13 +22,12 @@
         </div><!-- end post-meta  -->
 
         <div class="post-content">
-            {{ post.rendered_excerpt|safe }}
+            {{ post.rendered_content|safe }}
             <footer>
-                <a class="morelink" href="{% url 'post_detail' post.slug %}">&#9801; Read More &#9801;</a>
+                <a class="morelink" href="{{ post.slug }}">&larr; Next Post - Last Post &rarr;</a>
             </footer>
         </div><!-- end post-content  -->
     </article>
-    {% endfor %}
 </section><!-- end section  -->
 
 {% endblock %}

@@ -12,3 +12,14 @@ def post_list(request, *args, **kwargs):
     }
 
     return render(request, t, context)
+
+
+def post_detail(request, slug, *args, **kwargs):
+    post = Post.objects.get(slug=slug, draft_mode=False)
+    t = "post_detail.html"
+
+    context = {
+        "post": post
+    }
+
+    return render(request, t, context)
