@@ -5,7 +5,7 @@
 {% block page_content %}
 
 <section>
-    <header><h1>Archive</h1></header>
+    <header><h1>Archive for {{ year|date:"Y" }}</h1></header>
 
     {% for post in object_list %}
     <article>
@@ -26,6 +26,7 @@
         </div><!-- end post-content  -->
     </article>
     {% endfor %}
+
 </section><!-- end section  -->
 
 {% endblock %}

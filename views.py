@@ -1,4 +1,5 @@
 from django.views.generic import ListView, DetailView, ArchiveIndexView
+from django.views.generic.dates import YearArchiveView
 from .models import Post
 
 # Goodbye function based views, hello class based views.
@@ -9,10 +10,10 @@ from .models import Post
 
 class PostListView(ListView):
     """A view that returns a list of posts objects."""
-
     model = Post
     queryset = Post.objects.active()
     template_name = "post_list.html"
+    paginate_by = 3
 
 
 class PostDetailView(DetailView):
@@ -22,7 +23,19 @@ class PostDetailView(DetailView):
 
 
 class PostArchiveIndexView(ArchiveIndexView):
-
+    """returns a simple list of all post objects"""
     model = Post
+    queryset = Post.objects.active()
     date_field = "publish_date"
     template_name = "post_archive.html"
+    paginate_by = 3
+
+
+class PostYearArchiveView(YearArchiveView):
+    """returns a list of post objects published in a given year"""
+    model = Post
+    queryset = Post.objects.active()
+    template_name = 'post_archive_yearly.html'
+    date_field = 'publish_date'
+    make_object_list = True
+    paginate_by = 3
