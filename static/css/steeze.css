@@ -1,0 +1,110 @@
+/**
+ * Rokk Base Stylesheet by Chad Register
+ *
+ * This is file defines the basic styles for Rokk.
+ *
+ * Always remember to keep a consistant style guide. Indentation is 4 spaces.
+ * Define 'position' and 'box-model' declarations first. Use one selector per
+ * line in multi-selector rulesets and include one declaration per line in a
+ * declaration block.
+ */
+
+@import url("normalize.css");
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic);
+@import url("typography.css");
+@import url("style.css");
+@import url("monokai.css");
+
+
+
+/* Misc
+   ========================================================================== */
+
+/* Fluid image fix */
+img { max-width: 100%; margin-bottom: 1rem; }
+
+/* Classes for floating content left and right */
+.float-left { float:left; }
+.float-right { float:right; }
+
+/* Classes to hide, show, and disable content blocks */
+.hide { display:none; }
+.show { display:block; }
+.disabled {
+    opacity:0.5;
+    pointer-events:none;
+}
+
+/* Tables
+   ========================================================================== */
+
+table {
+    padding: 0;
+    border-top: .1rem solid #ddd;
+    border-right: .1rem solid #ddd;
+    border-bottom: .3rem solid #ddd;
+    border-left: .8rem solid #ddd;
+}
+
+    tbody {
+        display: table-row-group;
+        vertical-align: middle;
+
+    }
+
+    tr {
+        display: table-row;
+        border-color: inherit;
+        background: #f8f8f8;
+        vertical-align: inherit;
+    }
+
+    tr:nth-child(2n+1) {
+        background: #f6f6f6;
+    }
+
+        td, th {
+            display: table-cell;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #eee;
+            color: #484848;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        th { background: #f0f0f0;}
+
+/* Code Blocks
+   ========================================================================== */
+
+pre {
+    overflow-x: auto;
+    margin-top: -.5rem;
+    padding: .4rem .8rem;
+    line-height: 1.2rem;
+    border-radius: .3rem;
+}
+
+pre code { white-space: pre;}
+
+
+/* Media Queries
+   ========================================================================== */
+/* small pc resolutions */
+@media only screen and (max-width: 900px) {
+    .sidebar {
+        clear:both;
+        float:left;
+        width: 100%;
+    }
+
+
+    .wrapper { padding-right: 0;}
+}
+
+/* tablet media query max-width: 650px */
+@media only screen and (max-width: 560px) {
+    .post-meta, .comment-meta, .comment-content, .post-content, .sidebar {
+        width: 100%;
+    }
+}

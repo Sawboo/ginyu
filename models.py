@@ -9,6 +9,10 @@ from django.utils.text import truncate_words, truncate_html_words
 
 
 class Tag(models.Model):
+    """
+    A simple model used to categorize Post objects.
+
+    """
     name = models.CharField(max_length=64, unique=True)
     slug = models.CharField(max_length=64, unique=True, null=True, blank=True)
 
@@ -24,10 +28,17 @@ class Tag(models.Model):
 
 
 class PostManager(models.Manager):
+    """
+    A custom manager for the Post model.
 
+    Define shortcut methods for making database querys.
+
+    """
     def active(self, user=None):
-        """retrieves non-draft articles that have past their publish_date"""
+        """
+        Retrieve non-draft posts that have past their publish_date.
 
+        """
         now = datetime.now()
         if user is not None and user.is_superuser:
             # superusers get to see all articles, reguardless of draft-status
@@ -40,24 +51,27 @@ class PostManager(models.Manager):
 
 
 class Post(models.Model):
+    """
+    A model that stores data related to a single blog post.
 
+    """
+    title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
     publish_date = models.DateTimeField(default=datetime.now,
                                         help_text=('The date and time this \
                                             article will be published.'))
-    description = models.TextField(blank=True,
-                                   help_text="A brief explanation of the \
-                                   post's content used by search engines. \
-                                   (auto-magic)")
-    title = models.CharField(max_length=250)
     content = models.TextField()
     rendered_content = models.TextField()
+    rendered_excerpt = models.TextField()
     excerpt = models.TextField(blank=True,
                                help_text='A short teaser of your posts \
                                content. If omitted, an excerpt will be \
                                generated from the content field. (auto-magic)')
-    rendered_excerpt = models.TextField()
+    description = models.TextField(blank=True,
+                                   help_text="A brief explanation of the \
+                                   post's content used by search engines. \
+                                   (auto-magic)")
     slug = models.SlugField(unique_for_year='publish_date',
                             help_text='A URL-friendly representation of your \
                             posts title.')
@@ -70,12 +84,15 @@ class Post(models.Model):
                                      appear to regular users.')
     author = models.ForeignKey(User, related_name="posts")
 
-    # add our custom manager
+    # attach our custom manager
     objects = PostManager()
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
+
         self._excerpt = None
+        self._next = None
+        self._previous = None
 
     def __unicode__(self):
         return self.title
@@ -115,8 +132,45 @@ class Post(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('articles_display_article',
-                (self.publish_date.year, self.slug))
+        return ('PostDetailView', (), {
+                'slug': self.slug, })
+
+    def get_next_post(self):
+        """
+        Returns the next active post.
+
+        """
+        if not self._next:
+
+            # First we get a queryset of all Post objects excluding
+            # the current Post. We then chop off any Posts that have
+            # a publish_date earlier than current Post. Finally, the
+            # queryset is sliced to leave only the previous post.
+            try:
+                queryset = Post.objects.active().exclude(id__exact=self.id)
+                post = queryset.filter(
+                    publish_date__gte=self.publish_date).order_by('publish_date')[0]
+            except (Post.DoesNotExist, IndexError):
+                post = None
+            self._next = post
+
+        return self._next
+
+    def get_previous_post(self):
+        """
+        Returns the previous active post.
+
+        """
+        if not self._previous:
+            try:
+                queryset = Post.objects.active().exclude(id__exact=self.id)
+                post = queryset.filter(
+                    publish_date__lte=self.publish_date).order_by('-publish_date')[0]
+            except (Post.DoesNotExist, IndexError):
+                post = None
+            self._previous = post
+
+        return self._previous
 
     class Meta:
         ordering = ('-publish_date', 'title')
@@ -128,10 +182,11 @@ def render_markup(markdown):
     Uses markdown2 to return html markup.
 
     Extra implementations include:
-        * fenced-code-blocks with syntax highlighting.
-            http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
-        * wiki-tables support.
-            http://github.com/trentm/python-markdown2/wiki/wiki-tables
+    * fenced-code-blocks with syntax highlighting.
+    * http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
+    * wiki-tables support.
+    * http://github.com/trentm/python-markdown2/wiki/wiki-tables
+
     """
 
     markup = markdown2.markdown(markdown, extras=[

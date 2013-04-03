@@ -1,0 +1,141 @@
+/* natural box layout for all elements */
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  max-width: 1300px;
+  margin: 0 auto;
+  background-image: url("images/fabric_of_squares_gray.png");
+}
+a {
+  color: #000;
+  text-decoration: none;
+  border-bottom: 1px dashed #d4d4d4;
+}
+.wrapper {
+  padding-right: 260px;
+  margin: 0 1rem 0 1rem;
+}
+.header {
+  padding-top: 80px;
+  padding-left: 60px;
+  height: 180px;
+}
+.content {
+  float: left;
+  width: 100%;
+}
+.content article {
+  clear: both;
+}
+
+.description {
+  margin-top: -1rem;
+}
+
+.sidebar {
+  float: right;
+  width: 230px;
+  margin-right: -260px;
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+  font-size: 0.9rem;
+  line-height: 1.3rem;
+}
+.sidebar h5 {
+  margin-bottom: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+}
+.sidebar h5:first-child {
+  border: none;
+  padding-top: 0;
+}
+.sidebar li {
+  margin-left: -1rem;
+}
+.post-meta,
+.comment-meta {
+  float: left;
+  width: 25%;
+  font-size: 0.9rem;
+  line-height: 1.3rem;
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+}
+.post-meta h1,
+.comment-meta h1,
+.post-meta h2,
+.comment-meta h2 {
+  font-size: 1.3333333333333333rem;
+  line-height: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+.post-meta h1 a,
+.comment-meta h1 a,
+.post-meta h2 a,
+.comment-meta h2 a {
+  border-bottom: none;
+}
+.post-meta small,
+.comment-meta small {
+  line-height: 0.6rem;
+}
+.post-meta p,
+.comment-meta p {
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0;
+  margin-bottom: 0;
+}
+.post-content,
+.comment-content {
+  float: right;
+  width: 72%;
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+}
+.post-content .excerpt,
+.comment-content .excerpt {
+  color: #444;
+  text-decoration: none;
+}
+footer {
+  margin-bottom: 1.5rem;
+}
+footer a {
+  color: #666;
+  border-bottom: none;
+}
+.comments {
+  clear: both;
+}
+#footer {
+  clear: both;
+  padding: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid #d4d4d4;
+}
+
+
+#footer small {
+  padding: 1rem 0;
+  display: block;
+  clear: both;
+}
+
+#footer ul { margin: -.4rem 0 .4rem; padding: 0; }
+
+.next {
+  display: block;
+  height: 2rem;
+}
+
+.pagination li {
+  display: inline;
+}
