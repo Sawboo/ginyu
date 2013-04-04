@@ -1,11 +1,28 @@
-import re
+# The markdown2 python package is required
+import markdown2
 
-from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
-
-import markdown2
 from django.utils.text import truncate_words, truncate_html_words
+from datetime import datetime
+
+
+def render_markup(markdown):
+    """
+    Uses markdown2 to return html markup.
+
+    Extra implementations include:
+    * fenced-code-blocks with syntax highlighting.
+    * http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
+    * wiki-tables support.
+    * http://github.com/trentm/python-markdown2/wiki/wiki-tables
+
+    """
+    markup = markdown2.markdown(markdown, extras=[
+        "fenced-code-blocks",
+        "wiki-tables",
+        "code-friendly"])
+    return markup
 
 
 class Tag(models.Model):
@@ -40,14 +57,8 @@ class PostManager(models.Manager):
 
         """
         now = datetime.now()
-        if user is not None and user.is_superuser:
-            # superusers get to see all articles, reguardless of draft-status
-            return self.get_query_set().filter(publish_date__lte=now)
-        else:
-            # only show published, non-draft articles to visitors
-            return self.get_query_set().filter(
-                publish_date__lte=now,
-                draft_mode=False)
+        return self.get_query_set().filter(
+            publish_date__lte=now, draft_mode=False)
 
 
 class Post(models.Model):
@@ -98,34 +109,55 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        """overwrite model.save to call our new methods before saving."""
+        """
+        Call required methods before saving.
 
+        """
         self.render_content()
-        self.render_excerpt()
         self.meta_description()
+
+        # If the excerpt is left blank it will be generated from
+        # `self.content`, possibly resulting in open markdown tags.
+        # We can still generate a proper `self.rendered_excerpt` by
+        # html truncating `self.rendered_content`. This results in
+        # `self.rendered_excerpt` != markdown(self.excerpt) on the
+        # inital save. Before calling the save method, check to see
+        # if `self.excerpt` has changed before rendering it.
+        original = Post.objects.get(pk=self.pk)
+        if self.pk is None:
+            self.render_excerpt()
+        elif original.excerpt != self.excerpt:
+            self.render_excerpt()
 
         super(Post, self).save(*args, **kwargs)
 
     def render_content(self):
-        """render post.rendered_content from post.content"""
+        """
+        Use markdown2 to render post.rendered_content from post.content.
 
+        """
         self.rendered_content = render_markup(self.content)
         return self.rendered_content
 
     def render_excerpt(self):
-        """renders post.rendered_excerpt. If excerpt is blank, create it"""
+        """
+        If self.excerpt is blank generate it from `self.content`.
+        Otherwise, render self.excerpt via markdown.
 
+        """
         if len(self.excerpt.strip()):
             self.rendered_excerpt = render_markup(self.excerpt)
         else:
-            # use truncate_html_words to preserve linebreaks in self.content
+            self.rendered_excerpt = truncate_html_words(
+                self.rendered_content, 80)
             self.excerpt = truncate_html_words(self.content, 80)
-            self.rendered_excerpt = render_markup(self.excerpt)
         return self.excerpt
 
     def meta_description(self):
-        """if meta description is empty, create it from post.content"""
+        """
+        If the meta-description is empty, create it from post.content.
 
+        """
         if len(self.description.strip()) == 0:
             self.description = truncate_words(self.content, 25)
         return self.description
@@ -175,22 +207,3 @@ class Post(models.Model):
     class Meta:
         ordering = ('-publish_date', 'title')
         get_latest_by = 'publish_date'
-
-
-def render_markup(markdown):
-    """
-    Uses markdown2 to return html markup.
-
-    Extra implementations include:
-    * fenced-code-blocks with syntax highlighting.
-    * http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
-    * wiki-tables support.
-    * http://github.com/trentm/python-markdown2/wiki/wiki-tables
-
-    """
-
-    markup = markdown2.markdown(markdown, extras=[
-        "fenced-code-blocks",
-        "wiki-tables",
-        "code-friendly"])
-    return markup

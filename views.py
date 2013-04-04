@@ -13,7 +13,7 @@ class PostListView(ListView):
     model = Post
     queryset = Post.objects.active()
     template_name = "post_list.html"
-    paginate_by = 3
+    paginate_by = 10
 
 
 class PostDetailView(DetailView):
@@ -28,7 +28,7 @@ class PostArchiveIndexView(ArchiveIndexView):
     queryset = Post.objects.active()
     date_field = "publish_date"
     template_name = "post_archive.html"
-    paginate_by = 3
+    paginate_by = 20
 
 
 class PostYearArchiveView(YearArchiveView):
@@ -38,4 +38,4 @@ class PostYearArchiveView(YearArchiveView):
     template_name = 'post_archive_yearly.html'
     date_field = 'publish_date'
     make_object_list = True
-    paginate_by = 3
+    paginate_by = 20
