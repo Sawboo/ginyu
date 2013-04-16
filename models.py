@@ -119,14 +119,14 @@ class Post(models.Model):
         # If the excerpt is left blank it will be generated from
         # `self.content`, possibly resulting in open markdown tags.
         # We can still generate a proper `self.rendered_excerpt` by
-        # html truncating `self.rendered_content`. This results in
-        # `self.rendered_excerpt` != markdown(self.excerpt) on the
-        # inital save. Before calling the save method, check to see
-        # if `self.excerpt` has changed before rendering it.
-        original = Post.objects.get(pk=self.pk)
-        if self.pk is None:
-            self.render_excerpt()
-        elif original.excerpt != self.excerpt:
+        # html truncating `self.rendered_content`. Before calling
+        # the save method, check to see if `self.excerpt` has
+        # changed before rendering it.
+        try:
+            original = Post.objects.get(pk=self.pk)
+            if original.excerpt != self.excerpt:
+                self.render_excerpt()
+        except Post.DoesNotExist:
             self.render_excerpt()
 
         super(Post, self).save(*args, **kwargs)
@@ -173,7 +173,6 @@ class Post(models.Model):
 
         """
         if not self._next:
-
             # First we get a queryset of all Post objects excluding
             # the current Post. We then chop off any Posts that have
             # a publish_date earlier than current Post. Finally, the

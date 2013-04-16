@@ -9,13 +9,13 @@
         <div class="post-meta">
             <header>
                 <h1>{{ post.title }}</h1>
-                <small>{{ post.publish_date|date:"F j, Y" }}</small>
+                {{ post.publish_date|date:"F j, Y" }}
                 <br />
-                <small>by <cite>{{ post.author }}</cite></small>
+                by <cite>{{ post.author }}</cite>
             </header>
                 <p>
                     {% for tag in post.tags.all %}
-                        <a href="tags/{{ tag.slug }}">{{ tag.name }}</a>
+                        <a href="{% url 'TagListView' tag.slug %}">{{ tag.name }}</a>
                         {% if not forloop.last %}, {% endif %}
                      {% endfor %}
                 </p>
@@ -23,11 +23,22 @@
 
         <div class="post-content">
             {{ post.rendered_content|safe }}
-            <footer>
-                <a class="morelink" href="{{ post.slug }}">&larr; Next Post - Last Post &rarr;</a>
-            </footer>
+<!--             <footer>
+
+            </footer> -->
         </div><!-- end post-content  -->
     </article>
 </section><!-- end section  -->
+
+<section class="comments">
+    <div class="comment-meta">
+        <h2>Comments</h2>
+    </div>
+    <div class="comment-content">
+        <article>
+            <h5>Disqus comments go here!</h5>
+        </article>
+    </div>
+</section><!-- end comment section  -->
 
 {% endblock %}
