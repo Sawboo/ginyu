@@ -1,8 +1,5 @@
 from django.conf.urls import patterns, include, url
-from django.views.generic.dates import YearArchiveView
-
 from .feeds import LastestPostsFeed
-from .models import Post
 from .views import *
 
 urlpatterns = patterns('kablaam.apps.ginyu.views',

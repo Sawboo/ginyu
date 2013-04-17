@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, ArchiveIndexView
 from django.views.generic.dates import YearArchiveView
 from django.template import RequestContext
-from django.shortcuts import get_list_or_404, get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render_to_response
 from django.db.models import Count
 from .models import Post, Tag
 

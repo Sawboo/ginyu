@@ -11,7 +11,7 @@ Features
 - [ ] integrated search
 - [x] use of Markdown as markup format
 - [x] archive views
-- [ ] RSS feed support
+- [x] RSS feed support
 - [x] post drafts and prepublication
 - [ ] bit.ly support
 - [x] admin dashboard
