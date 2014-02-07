@@ -1,0 +1,148 @@
+@import 'modular-scale'
+
+
+/* =========================================================================
+   Configuration
+============================================================================ */
+// Adjust the overall font size and line height here. Headings are set
+// in ems and will be resized accordingly with the body copy.
+// Common Sizes: 100% = 16px, 112.5% = 18px, 118.8 = 19px, 125% = 20px
+$font-size = 118.8
+$line-height = 1.625
+$weight = normal
+
+// Set the default font stack for the body copy
+$font-family = Georgia, serif
+
+// Set default type to dark grey
+$body-color = rgb(17, 17, 17)
+$heading-color = #222
+
+// convert a percentage value to a pixel value
+$font-base = 16 * ($font-size/100)
+
+// used to calculate bottom margins (needs to be looked at again)
+$measure = ($font-base * $line-height)
+
+/* TypeScale
+============================================================================ */
+// The ms() function will help create font sizes based on a modular scale.
+// The following ratios are available in modular-scale.styl:
+//
+//     $double_octave = (4/1.0)
+//     $major_twelfth = (3/1.0)
+//     $major_eleventh = (8/3.0)
+//     $major_tenth = (5/2.0)
+//     $octave = (2/1.0)
+//     $major_seventh = (15/8.0)
+//     $minor_seventh = (16/9.0)
+//     $major_sixth = (5/3.0)
+//     $minor_sixth = (8/5.0)
+//     $fifth = (3/2.0)
+//     $fourth = (4/3.0)
+//     $major_third = (5/4.0)
+//     $minor_third = (6/5.0)
+//     $major_second = (9/8.0)
+//     $minor_second = (16/15.0)
+//     $golden = 1.618
+$ratio = $minor_second
+
+// massive type
+.mega
+    ms(16)
+// h1-h6
+.alpha
+    ms(6)
+.beta
+    ms(4)
+.gamma
+    ms(3)
+.delta
+    ms(2)
+.epsilon
+    ms(1)
+.zeta
+    ms(1)
+
+// this is the amount paragraphs will be indented
+$indent-val = 0
+
+
+/* =========================================================================
+   Headings & Paragraphs
+============================================================================ */
+
+heading-global()
+    text-rendering optimizeLegibility
+    // fix huge spaces when a heading wraps onto two lines
+    line-height 1
+    margin-top 0
+    margin-bottom ($font-base / $measure * $ratio) rem
+    font-weight $weight
+    color $heading-color
+
+// associate h1-h6 tags with their appropriate greek heading
+h1
+    @extends .alpha
+    heading-global()
+    font-weight 300
+h2
+    @extends .beta
+    heading-global()
+h3
+    @extends .gamma
+    heading-global()
+h4
+    @extends .delta
+    heading-global()
+h5
+    @extends .epsilon
+    heading-global()
+h6
+    @extends .zeta
+    heading-global()
+
+body
+    font: $weight s('%s%/%s', $font-size, $line-height) $font-family
+    word-wrap auto
+    color $body-color
+
+/* Word Wrap Classes
+============================================================================ */
+// normal: Indicates that lines may only break at normal word break points.
+// break-word: Normally unbreakable words may be broken at arbitrary points
+// if there are no otherwise acceptable break points.
+breakword()
+    word-wrap break-word
+
+normal-wrap()
+    word-wrap normal
+
+inherit-wrap()
+    word-wrap auto
+
+
+/* =========================================================================
+   Other Styles
+============================================================================ */
+
+// Set margin and text indentation for paragraphs and child paragraphs
+p
+    margin 0 0 1em $indent-val
+    & + p
+        //sibling indentation
+        text-indent $indent-val
+        margin-top s("-%s", $indent-val)
+
+// fix indentation on <p class="small">
+.small
+    text-indent 0
+
+
+/* Custom Bullshit
+============================================================================ */
+#content
+    // makes the center column in type.html adjust with the type size for
+    // a comfortable amount of characters per line. (80-90)
+    center(40.625em)
+    margin-top 2em

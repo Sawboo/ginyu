@@ -1,44 +1,42 @@
 {% extends "base.html" %}
+{% block page_description %}{{ post.description|safe }}{% endblock %}
 
 {% block page_title %}{{ post.title }}{% endblock %}
 
 {% block page_content %}
 
 <section>
-    <article>
-        <div class="post-meta">
-            <header>
-                <h1>{{ post.title }}</h1>
-                {{ post.publish_date|date:"F j, Y" }}
-                <br />
-                by <cite>{{ post.author }}</cite>
-            </header>
-                <p>
-                    {% for tag in post.tags.all %}
-                        <a href="{% url 'TagListView' tag.slug %}">{{ tag.name }}</a>
-                        {% if not forloop.last %}, {% endif %}
-                     {% endfor %}
-                </p>
-        </div><!-- end post-meta  -->
+    <article class="post">
+        <span>
+            {{ post.publish_date|date:"F j, Y" }}
+        </span>
+        <h1>{{ post.title }}</h1>
 
-        <div class="post-content">
+        <div class="body">
             {{ post.rendered_content|safe }}
-<!--             <footer>
+        </div>
 
-            </footer> -->
-        </div><!-- end post-content  -->
+        <p class="tags">
+            Tags: {% for tag in post.tags.all %}
+                <a href="{% url 'TagListView' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+             {% endfor %}
+        </p>
     </article>
+    <span class="morelink alpha">
+        ♜♛</span>
+
 </section><!-- end section  -->
 
 <section class="comments">
     <div class="comment-meta">
-        <h2>Comments</h2>
+        <h2>Is there anybody out there?</h2>
     </div>
     <div class="comment-content">
         <article>
-            <h5>Disqus comments go here!</h5>
+            <span>Disqus comments go here!</span>
         </article>
     </div>
 </section><!-- end comment section  -->
+</div><!-- end post-content  -->
 
 {% endblock %}

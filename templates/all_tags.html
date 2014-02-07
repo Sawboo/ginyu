@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blog Index - {% endblock %}
+
+{% block page_content %}
+
+<section>
+    <header><span class="alpha">All Tags</span></header>
+    <p class="delta">
+    {% for tag in object_list %}
+        <a href="{% url 'TagListView' tag.slug %}">{{ tag.name }}</a>&nbsp;<small>({{ tag.post__count }})</small>,
+    </article>
+    {% endfor %}
+    </p>
+</section><!-- end section  -->
+
+{% endblock %}

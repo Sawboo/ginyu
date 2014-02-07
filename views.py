@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, ArchiveIndexView
 from django.views.generic.dates import YearArchiveView
+from django.db.models import Count
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.db.models import Count
@@ -18,6 +19,12 @@ class PostListView(ListView):
     template_name = "post_list.html"
     paginate_by = 10
 
+class TagListAll(ListView):
+    """A view that returns a list of tag objects."""
+    model = Tag
+    queryset = Tag.objects.all().annotate(Count('post'))
+    template_name = "all_tags.html"
+    paginate_by = 10
 
 def TagListView(request, tag):
     """A view that returns a list of posts objects with a given tag."""
@@ -33,6 +40,7 @@ def TagListView(request, tag):
 class PostDetailView(DetailView):
     """A view that returns the details of a single post."""
     model = Post
+    date_field = 'publish_date'
     template_name = "post_detail.html"
 
 

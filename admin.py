@@ -25,8 +25,8 @@ class PostAdmin(admin.ModelAdmin):
         (None, {'fields': (
                 'title',
                 'content',
-                'tags',
                 'publish_date',
+                'tags',
                 'draft_mode')
                 }),
         ('Metadata', {

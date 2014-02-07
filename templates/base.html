@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{%block page_title %}{% endblock %}</title>
+        <meta name="description" content="{% block page_description %}{% endblock %}">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/common/normalize.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+        <!--[if lt IE 9]><script src="js/vendor/selectivizr-1.0.2.min.js"></script><![endif]-->
+        <script src="{{ STATIC_URL }}js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 9]>
+            <div class="chromeframe"><p>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p></div>
+        <![endif]-->
+    <div id="header">
+        <h1 class="mega"><a href="/">Sawboo.com</a></h1>
+        <p id="tagline">A code mangling skate ninja who breaks stuff with his mind. <img src="{{ STATIC_URL }}img/kappa.png" alt="Kappa" /></p>
+        <p id="navigation">
+                <a href="/blog/">all</a> /
+                <a href="/blog/tags/code/">code</a> /
+                <a href="/blog/tags/gaming/">gaming</a> /
+                <a href="/tips/advanced/">music</a> /
+                <a href="/blog/tags/all/">more</a> —
+                <a href="http://feeds.feedburner.com/hgtip/">snippets</a> —
+                <a href="/about/">about</a> —
+                <a href="/contact/">contact</a>
+        </p>
+    </div>
+
+    <div id="content">
+    {% block page_content %}{% endblock %}
+    </div>
+    <div id="footer">
+         <p id="navigation">
+                <a href="/blog/">all</a> /
+                <a href="/blog/tags/code/">code</a> /
+                <a href="/blog/tags/gaming/">gaming</a> /
+                <a href="/tips/advanced/">music</a> /
+                <a href="/blog/tags/all/">more</a> —
+                <a href="http://feeds.feedburner.com/hgtip/">snippets</a> —
+                <a href="/about/">about</a> —
+                <a href="/contact/">contact</a>
+        </p>
+    </div>
+
+
+        <!--[if lt IE 9]>
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <![endif]-->
+        <!--[if gt IE 8]><!-->
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/vendor/jquery-2.0.0.min.js"><\/script>')</script>
+        <!--<![endif]-->
+        <script src="{{ STATIC_URL }}js/vendor/jquery.placeholder.min.js"></script>
+        <script>
+            $(function(){
+                $('input, textarea').placeholder();
+                $('.chromeframe').on('click', function() {
+                    $(this).slideUp('fast');
+                });
+            });
+        </script>
+    </body>
+</html>

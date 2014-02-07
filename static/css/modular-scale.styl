@@ -1,0 +1,76 @@
+// Here are some common ratios
+$double_octave = (4/1.0)
+$major_twelfth = (3/1.0)
+$major_eleventh = (8/3.0)
+$major_tenth = (5/2.0)
+$octave = (2/1.0)
+$major_seventh = (15/8.0)
+$minor_seventh = (16/9.0)
+$major_sixth = (5/3.0)
+$minor_sixth = (8/5.0)
+$fifth = (3/2.0)
+$fourth = (4/3.0)
+$major_third = (5/4.0)
+$minor_third = (6/5.0)
+$major_second = (9/8.0)
+$minor_second = (16/15.0)
+$golden = 1.618
+
+// All of this bullshit code is to be ignored. I can't figure out a solution
+// without support for while loops. Maybe someone will have a solution.
+ms($value)
+    $base-font = $font-base
+    $r = $ratio
+    if $value == 1
+        $size = ($r*$base-font)
+    if $value == 2
+        $size = ($r*$r*$base-font)
+    if $value == 3
+        $size = ($r*$r*$r*$base-font)
+    if $value == 4
+        $size = ($r*$r*$r*$r*$base-font)
+    if $value == 5
+        $size = ($r*$r*$r*$r*$r*$base-font)
+    if $value == 6
+        $size = ($r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 7
+        $size = ($r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 8
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 9
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 10
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 11
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 12
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 13
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 14
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 15
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 16
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 17
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 18
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 19
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 20
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 21
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 22
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 23
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 24
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    if $value == 25
+        $size = ($r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$r*$base-font)
+    // Convert the px to ems
+    $size = ($size/16)
+    font-size $size em

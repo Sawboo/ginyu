@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block page_title %}Code Index - {% endblock %}
+
+{% block page_content %}
+
+<section>
+    <span class="alpha">All Gists</span>
+    {% for post in snippet_list %}
+    <article class="post">
+        <span>
+            {{ post.created_at|date:"F j, Y" }}
+        </span>
+        <h3 class="title">
+          <a href="{{ post.slug }}">{{ post.name }}</a>
+        </h3>
+
+        <div class="body">
+            {{ post.description }}
+
+        {% for snippet in post.snippet_set.all %}
+            <p class="tags">{{ snippet.name }} -
+                {{ snippet.language }}</p>
+
+        {% endfor %}
+
+        <a class="morelink alpha" href="">
+        ♜♛</a>
+        </div>
+    </article>
+
+    {% endfor %}
+</section><!-- end section  -->
+
+</div><!-- end post-content  -->
+{% endblock %}

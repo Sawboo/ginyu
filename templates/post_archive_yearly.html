@@ -5,25 +5,22 @@
 {% block page_content %}
 
 <section>
-    <header><h1>Archive for {{ year|date:"Y" }}</h1></header>
+    <span class="alpha">Archive for {{ year|date:"Y" }}</span>
 
     {% for post in object_list %}
-    <article>
-        <div class="post-meta">
-            <header>
-                <h1>{{ post.publish_date|date:"F j, Y" }}</h1>
-                by <cite>{{ post.author }}</cite>
-            </header>
-        </div><!-- end post-meta  -->
+    <article class="post">
+        <span>
+            {{ post.publish_date|date:"F j, Y" }}
+        </span>
+        <h1 class="title">
+          <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        </h1>
 
-        <div class="post-content">
-            <h4><a href="{% url 'PostDetailView' post.slug %}">
-                {{ post.title }}</a></h4>
-                <div class="description">
-                    {{ post.rendered_excerpt|safe|truncatewords_html:20 }}
-                </div>
-
-        </div><!-- end post-content  -->
+        <div class="body">
+            {{ post.rendered_excerpt|safe|truncatewords_html:20 }}
+        <a class="morelink alpha" href="{{ post.get_absolute_url }}">
+        ♜♛</a>
+        </div>
     </article>
     {% endfor %}
 

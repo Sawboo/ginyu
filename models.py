@@ -1,28 +1,29 @@
-# The markdown2 python package is required
-import markdown2
-
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.text import truncate_words, truncate_html_words
+from django.utils.html import strip_tags
+from django.utils.text import Truncator
 from datetime import datetime
+from django.utils.timezone import utc
 
+import requests
+import json
 
 def render_markup(markdown):
     """
-    Uses markdown2 to return html markup.
-
-    Extra implementations include:
-    * fenced-code-blocks with syntax highlighting.
-    * http://github.com/trentm/python-markdown2/wiki/fenced-code-blocks
-    * wiki-tables support.
-    * http://github.com/trentm/python-markdown2/wiki/wiki-tables
+    Uses the github api to return html markup.
 
     """
-    markup = markdown2.markdown(markdown, extras=[
-        "fenced-code-blocks",
-        "wiki-tables",
-        "code-friendly"])
-    return markup
+    headers = {'content-type': 'application/json'}
+
+    context = {
+        "text": markdown,
+        "mode": "gfm",
+        "context": "github/sawboo"
+    }
+
+    r = requests.post('https://api.github.com/markdown', data=json.dumps(context), headers=headers)
+
+    return r.text
 
 
 class Tag(models.Model):
@@ -56,7 +57,7 @@ class PostManager(models.Manager):
         Retrieve non-draft posts that have past their publish_date.
 
         """
-        now = datetime.now()
+        now = datetime.utcnow().replace(tzinfo=utc)
         return self.get_query_set().filter(
             publish_date__lte=now, draft_mode=False)
 
@@ -69,7 +70,7 @@ class Post(models.Model):
     title = models.CharField(max_length=250)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
-    publish_date = models.DateTimeField(default=datetime.now,
+    publish_date = models.DateTimeField(default=datetime.utcnow().replace(tzinfo=utc),
                                         help_text=('The date and time this \
                                             article will be published.'))
     content = models.TextField()
@@ -142,30 +143,48 @@ class Post(models.Model):
     def render_excerpt(self):
         """
         If self.excerpt is blank generate it from `self.content`.
-        Otherwise, render self.excerpt via markdown.
+        Otherwise, render self.rendered_excerpt.
 
         """
         if len(self.excerpt.strip()):
             self.rendered_excerpt = render_markup(self.excerpt)
         else:
-            self.rendered_excerpt = truncate_html_words(
-                self.rendered_content, 80)
-            self.excerpt = truncate_html_words(self.content, 80)
+            self.rendered_excerpt = Truncator(self.rendered_content).words(
+                    80,
+                    html=True,
+                    truncate=' ...'
+            )
+            self.excerpt = Truncator(self.content).words(
+                    80,
+                    html=True,
+                    truncate=' ...'
+            )
         return self.excerpt
 
     def meta_description(self):
         """
         If the meta-description is empty, create it from post.content.
+        First render the markdown, strip any html tags, then truncate
+        the text to 25 words.
 
         """
+
         if len(self.description.strip()) == 0:
-            self.description = truncate_words(self.content, 25)
-        return self.description
+            # remove extra html tags from the description
+            d = strip_tags(render_markup(self.content))
+            self.description = Truncator(d).words(
+                    25,
+                    html=True,
+                    truncate=' ...'
+            )
+        return
 
     @models.permalink
     def get_absolute_url(self):
         return ('PostDetailView', (), {
-                'slug': self.slug, })
+                    'slug': self.slug,
+                    'year': self.publish_date.strftime("%Y"),
+                    })
 
     def get_next_post(self):
         """
