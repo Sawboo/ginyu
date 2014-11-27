@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_description %}{% endblock %}
+
+{% block page_title %}{{ object.title }}{% endblock %}
+
+{% block page_content %}
+
+<section>
+    <article class="object">
+    <span>
+            {{ object.created_at|date:"F j, Y" }}
+        </span>
+        <h3 class="title">
+          <a href="{{ object.slug }}">{{ object.name }}</a>
+        </h3>
+
+        <div class="body">
+            {{ object.description }}
+
+            {% for snippet in object.snippet_set.all %}
+                {{ snippet.name }}
+                {{ snippet.size }}
+                {{ snippet.type }}
+                {{ snippet.language }}
+                {{ snippet.raw_url }}
+                <code><pre>{{ snippet.raw_text }}</pre></code>
+            {% endfor %}
+
+        </div>
+    </article>
+    <span class="morelink alpha">
+        ♜♛</span>
+
+</section><!-- end section  -->
+
+<section class="comments">
+    <div class="comment-meta">
+        <h2>Is there anybody out there?</h2>
+    </div>
+    <div class="comment-content">
+        <article>
+            <span>Disqus comments go here!</span>
+        </article>
+    </div>
+</section><!-- end comment section  -->
+</div><!-- end post-content  -->
+
+{% endblock %}

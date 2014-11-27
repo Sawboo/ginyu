@@ -8,7 +8,7 @@
     <span class="alpha">Tag: {{ tag_name }}</span>
     {% for post in object_list %}
     <article class="post">
-        <span>
+        <span class="published">
             {{ post.publish_date|date:"F j, Y" }}
         </span>
         <h1 class="title">

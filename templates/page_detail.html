@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_description %}{{ page.description|safe }}{% endblock %}
+
+{% block page_title %}{{ page.title }}{% endblock %}
+
+{% block page_head %}{{ page.head|safe }}{% endblock %}
+
+{% block page_content %}
+
+<section>
+    <article class="post">
+        <span class="published">
+            {{ page.publish_date|date:"F j, Y" }}
+        </span>
+        <h1>{{ page.title }}</h1>
+
+        <div class="body">
+            {{ page.rendered_content|safe }}
+        </div>
+
+    </article>
+    <span class="morelink alpha">
+        ♜♛</span>
+
+</section><!-- end section  -->
+
+<section class="comments">
+    <div class="comment-meta">
+        <h2>Is there anybody out there?</h2>
+    </div>
+    <div class="comment-content">
+        <article>
+            <span>Disqus comments go here!</span>
+        </article>
+    </div>
+</section><!-- end comment section  -->
+
+
+{% endblock %}
+
+{% block page_foot %}{{ page.foot|safe }}{% endblock %}

@@ -7,7 +7,7 @@
 
 <section>
     <article class="post">
-        <span>
+        <span class="published">
             {{ post.publish_date|date:"F j, Y" }}
         </span>
         <h1>{{ post.title }}</h1>
@@ -24,7 +24,6 @@
     </article>
     <span class="morelink alpha">
         ♜♛</span>
-
 </section><!-- end section  -->
 
 <section class="comments">
@@ -37,6 +36,8 @@
         </article>
     </div>
 </section><!-- end comment section  -->
+
 </div><!-- end post-content  -->
+
 
 {% endblock %}

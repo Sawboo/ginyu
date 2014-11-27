@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -9,10 +10,12 @@
         <title>{%block page_title %}{% endblock %}</title>
         <meta name="description" content="{% block page_description %}{% endblock %}">
         <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/common/normalize.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+        <link rel="stylesheet" href="/static/css/common/normalize.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/github.css">
         <!--[if lt IE 9]><script src="js/vendor/selectivizr-1.0.2.min.js"></script><![endif]-->
-        <script src="{{ STATIC_URL }}js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        {% block page_head %}{% endblock %}
     </head>
     <body>
         <!--[if lt IE 9]>
@@ -20,14 +23,14 @@
         <![endif]-->
     <div id="header">
         <h1 class="mega"><a href="/">Sawboo.com</a></h1>
-        <p id="tagline">A code mangling skate ninja who breaks stuff with his mind. <img src="{{ STATIC_URL }}img/kappa.png" alt="Kappa" /></p>
+        <p id="tagline">A code mangling skate ninja who breaks stuff with his mind. <img src="/static/img/kappa.png" alt="Kappa" /></p>
         <p id="navigation">
-                <a href="/blog/">all</a> /
+                <a href="/blog/">recent</a> /
                 <a href="/blog/tags/code/">code</a> /
                 <a href="/blog/tags/gaming/">gaming</a> /
                 <a href="/tips/advanced/">music</a> /
                 <a href="/blog/tags/all/">more</a> —
-                <a href="http://feeds.feedburner.com/hgtip/">snippets</a> —
+                <a href="/code/">snippets</a> —
                 <a href="/about/">about</a> —
                 <a href="/contact/">contact</a>
         </p>
@@ -35,8 +38,36 @@
 
     <div id="content">
     {% block page_content %}{% endblock %}
+
     </div>
     <div id="footer">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                <span class="tags">
+                <a href="?page={{ page_obj.previous_page_number }}">&lt; Foward</a> — </span>
+           {% endif %}
+
+           <span class="tags">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+           {% if page_obj.has_next %}
+              <span class="tags"> — <a href="?page={{ page_obj.next_page_number }}">Back &gt;</a></span>
+           {% endif %}
+        {% endif %}
+
+
+        {% if post.get_next_post %}
+            <span class="tags">Next: <a href="/{{ post.get_next_post.publish_date|date:"Y" }}/{{ post.get_next_post.slug }}">{{ post.get_next_post.title }}</a>
+            </span>
+            <br />
+        {% endif %}
+
+        {% if post.get_previous_post %}
+            <span class="tags">Previous: <a href="/{{ post.get_previous_post.publish_date|date:"Y" }}/{{ post.get_previous_post.slug }}">{{ post.get_previous_post.title }}</a>
+            </span>
+        {% endif %}
+
          <p id="navigation">
                 <a href="/blog/">all</a> /
                 <a href="/blog/tags/code/">code</a> /
@@ -67,5 +98,6 @@
                 });
             });
         </script>
+        {% block page_foot %}{% endblock %}
     </body>
 </html>

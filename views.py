@@ -4,7 +4,7 @@ from django.db.models import Count
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
 from django.db.models import Count
-from .models import Post, Tag
+from .models import Post, Tag, Page
 
 # Goodbye function based views, hello class based views.
 # For more information on the magic going on here see the docs:
@@ -42,6 +42,12 @@ class PostDetailView(DetailView):
     model = Post
     date_field = 'publish_date'
     template_name = "post_detail.html"
+
+class PageDetailView(DetailView):
+    """A view that returns the details of a single page."""
+    model = Page
+    date_field = 'publish_date'
+    template_name = "Page_detail.html"
 
 
 class PostArchiveIndexView(ArchiveIndexView):

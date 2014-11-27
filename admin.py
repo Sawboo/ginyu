@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Post
+from .models import Tag, Post, Page
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -27,6 +27,7 @@ class PostAdmin(admin.ModelAdmin):
                 'content',
                 'publish_date',
                 'tags',
+                'html_mode',
                 'draft_mode')
                 }),
         ('Metadata', {
@@ -51,5 +52,45 @@ class PostAdmin(admin.ModelAdmin):
         obj.author = request.user
         obj.save()
 
+class PageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'publish_date', 'draft_mode')
+    list_editable = ['draft_mode']
+    list_filter = ('author', 'draft_mode', 'publish_date')
+    list_per_page = 25
+    search_fields = ('title', 'description', 'content')
+    date_hierarchy = 'publish_date'
+    inlines = []
+
+    fieldsets = (
+        (None, {'fields': (
+                'title',
+                'content',
+                'publish_date',
+                'html_mode',
+                'draft_mode')
+                }),
+        ('Metadata', {
+            'fields': ('slug', 'description',),
+            'classes': ('collapse',)
+        }),
+        ('Advanced', {
+            'fields': ('head', 'foot',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    prepopulated_fields = {'slug': ('title',)}
+
+    class Media:
+        """Load custom css into the admin site"""
+        css = {'all': ('/static/admin-style.css',)}
+
+    def save_model(self, request, obj, form, change):
+        """Set the Page's author based on the logged in user"""
+        obj.author = request.user
+        obj.save()
+
+
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Post, PostAdmin)
+admin.site.register(Page, PageAdmin)
